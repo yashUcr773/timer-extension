@@ -54,9 +54,15 @@ export const Presets: React.FC<{ onSelect: (preset: Preset) => void }> = ({ onSe
     if (storage) storage.set({ "timer_presets": updated });
   };
 
+  // Add random color button
+  const pickRandomColor = () => {
+    const idx = Math.floor(Math.random() * presetColors.length);
+    setColor(presetColors[idx]);
+  };
+
   return (
-    <div className="flex flex-col gap-4 p-4 bg-card rounded-lg shadow w-full max-w-xs animate-fade-in">
-      <h2 className="text-xl font-bold">Presets</h2>
+    <div className="flex flex-col gap-4 p-4 bg-white/80 dark:bg-zinc-900/80 rounded-2xl shadow-2xl w-full max-w-xs animate-fade-in border border-zinc-200 dark:border-zinc-700 backdrop-blur-md">
+      <h2 className="text-xl font-bold flex items-center gap-2">Presets <span className="text-lg">🎨</span></h2>
       <form className="flex flex-col gap-2 mb-2" onSubmit={e => { e.preventDefault(); savePreset(); }}>
         <label className="flex flex-col text-sm">
           Name
@@ -84,18 +90,25 @@ export const Presets: React.FC<{ onSelect: (preset: Preset) => void }> = ({ onSe
         </label>
         <label className="flex flex-col text-sm">
           Color
-          <div className="flex gap-1 mt-1">
+          <div className="flex gap-1 mt-1 items-center">
             {presetColors.map(c => (
               <button
                 key={c}
                 type="button"
-                className={`w-6 h-6 rounded-full border-2 ${color === c ? 'border-black dark:border-white scale-110' : 'border-transparent'} transition-all`}
+                className={`w-6 h-6 rounded-full border-2 ${color === c ? 'border-black dark:border-white scale-110 ring-2 ring-primary' : 'border-transparent'} transition-all`}
                 style={{ background: c }}
                 onClick={() => setColor(c)}
                 aria-label={`Select color ${c}`}
                 title={`Select color ${c}`}
               />
             ))}
+            <button
+              type="button"
+              className="btn btn-xs btn-outline ml-2"
+              onClick={pickRandomColor}
+              aria-label="Pick random color"
+              title="Pick random color"
+            >🎲</button>
           </div>
         </label>
         <button className="btn btn-primary mt-2" type="submit" aria-label="Save preset" title="Save preset">
@@ -103,12 +116,12 @@ export const Presets: React.FC<{ onSelect: (preset: Preset) => void }> = ({ onSe
         </button>
       </form>
       <div className="flex flex-col gap-2">
-        {presets.length === 0 && <div className="text-xs text-zinc-400">No presets yet.</div>}
+        {presets.length === 0 && <div className="text-xs text-zinc-400 italic text-center py-4">No presets yet. Add your favorite timer setups!</div>}
         {presets.map(preset => (
           <div
             key={preset.id}
-            className="flex items-center gap-2 p-2 rounded bg-muted animate-fade-in"
-            style={{ borderLeft: `6px solid ${preset.color}` }}
+            className="flex items-center gap-2 p-2 rounded bg-muted/60 animate-fade-in border-l-4"
+            style={{ borderColor: preset.color }}
           >
             <button
               className="flex-1 text-left font-semibold"

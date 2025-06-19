@@ -7,6 +7,11 @@ const MOTIVATIONAL_QUOTES = [
   "Track your best time!",
   "Every lap is a win!",
   "You’ve got this!",
+  "Discipline is the bridge between goals and accomplishment.",
+  "Success is the sum of small efforts repeated day in and day out.",
+  "You’re building momentum!",
+  "One step at a time!",
+  "You’re doing better than you think!",
 ];
 const STOPWATCH_COLOR = "#22d3ee";
 
@@ -15,7 +20,7 @@ export const Stopwatch: React.FC = () => {
   const [running, setRunning] = useState(false);
   const [laps, setLaps] = useState<number[]>([]);
   const [showConfetti, setShowConfetti] = useState(false);
-  const [quote, setQuote] = useState(MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)]);
+  const [quoteIdx, setQuoteIdx] = useState(() => Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length));
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastTick = useRef<number | null>(null);
 
@@ -66,7 +71,7 @@ export const Stopwatch: React.FC = () => {
   useEffect(() => {
     if (laps.length > 0 && laps.length % 5 === 0) {
       setShowConfetti(true);
-      setQuote(MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)]);
+      setQuoteIdx(Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length));
     }
   }, [laps]);
   useEffect(() => {
@@ -98,19 +103,25 @@ export const Stopwatch: React.FC = () => {
   const percent = Math.max(0, Math.min(1, elapsed / 3600000));
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4 bg-card rounded-lg shadow w-full max-w-xs relative">
+    <div className="flex flex-col items-center gap-4 p-4 bg-white/80 dark:bg-zinc-900/80 rounded-2xl shadow-2xl w-full max-w-xs animate-fade-in border border-zinc-200 dark:border-zinc-700 backdrop-blur-md relative">
       {/* Confetti animation */}
       {showConfetti && (
         <div className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center animate-fade-in">
           <span className="text-6xl select-none">🎉</span>
         </div>
       )}
-      <div className="flex w-full justify-between items-center mb-2">
+      <div className="flex w-full justify-between items-center mb-1">
         <h2 className="text-xl font-bold">Stopwatch</h2>
       </div>
-      {/* Motivational quote */}
-      <div className="italic text-xs text-center text-zinc-500 dark:text-zinc-400 mb-1 animate-fade-in">
-        {quote}
+      {/* Motivational quote and new quote button */}
+      <div className="italic text-xs text-center text-zinc-500 dark:text-zinc-400 mb-1 animate-fade-in flex items-center gap-2">
+        <span>{MOTIVATIONAL_QUOTES[quoteIdx]}</span>
+        <button
+          className="btn btn-xs btn-ghost"
+          aria-label="New motivational quote"
+          title="Show another quote"
+          onClick={() => setQuoteIdx(idx => (idx + 1) % MOTIVATIONAL_QUOTES.length)}
+        >🔄</button>
       </div>
       {/* Animated Progress ring with moving indicator */}
       <div className="relative flex items-center justify-center my-2">

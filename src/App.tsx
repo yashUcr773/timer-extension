@@ -1,12 +1,11 @@
 import './App.css'
-import { Button } from './components/ui/button'
+import { CountdownTimer } from './components/CountdownTimer'
 
 function App() {
-
   return (
-    <>
-      <Button variant={'outline'}>Hello</Button>
-    </>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+      <CountdownTimer />
+    </div>
   )
 }
 

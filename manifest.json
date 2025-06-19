@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "TimeMate – Chrome Timer Extension",
+  "description": "A multifunctional timer extension: Stopwatch, Countdown, Pomodoro, and more.",
+  "version": "0.1.0",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "vite.svg",
+      "48": "vite.svg",
+      "128": "vite.svg"
+    }
+  },
+  "permissions": [
+    "storage",
+    "notifications"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "vite.svg",
+    "48": "vite.svg",
+    "128": "vite.svg"
+  }
+}

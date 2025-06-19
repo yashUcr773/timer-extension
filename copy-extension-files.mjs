@@ -1,4 +1,4 @@
-// Copy manifest.json, popup.html, and background.js to dist after build
+// Copy manifest.json, background.js, options.html to dist after build
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -8,8 +8,8 @@ const __dirname = path.dirname(__filename);
 
 const filesToCopy = [
   'manifest.json',
-  'popup.html',
   'background.js',
+  'options.html',
 ];
 
 filesToCopy.forEach((file) => {
@@ -39,3 +39,13 @@ if (fs.existsSync(iconSrc)) {
 } else {
   console.warn('vite.svg not found in public/');
 }
+
+// Clean dist: remove any files/folders not in the allow list
+const distPath = path.resolve(__dirname, 'dist');
+const allowed = new Set(['manifest.json', 'background.js', 'options.html', 'vite.svg', 'assets', 'popup.html']);
+fs.readdirSync(distPath).forEach((file) => {
+  if (!allowed.has(file)) {
+    fs.rmSync(path.join(distPath, file), { recursive: true, force: true });
+    console.log(`Removed extra file/folder: ${file}`);
+  }
+});

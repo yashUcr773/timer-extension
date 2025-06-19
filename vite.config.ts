@@ -11,4 +11,16 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      input: {
+        popup: path.resolve(__dirname, 'popup.html'),
+      },
+      output: {
+        // No special output config needed for popup.html
+      }
+    },
+    outDir: 'dist',
+    emptyOutDir: true,
+  },
 })

@@ -10,8 +10,8 @@ function secondsToHMS(seconds: number) {
 
 const STORAGE_KEY = "timemate_countdown";
 
-export const CountdownTimer: React.FC = () => {
-  const [input, setInput] = useState("00:25:00");
+export const CountdownTimer: React.FC<{ initialDuration?: string | null }> = ({ initialDuration }) => {
+  const [input, setInput] = useState(initialDuration || "00:25:00");
   const [remaining, setRemaining] = useState(1500);
   const [running, setRunning] = useState(false);
 
@@ -28,6 +28,10 @@ export const CountdownTimer: React.FC = () => {
   };
 
   useEffect(() => {
+    if (initialDuration) {
+      setInput(initialDuration);
+      chrome.runtime.sendMessage({ type: "set_input", input: initialDuration }, syncState);
+    }
     syncState();
     // Listen for storage changes (background updates)
     // @ts-expect-error: Chrome extension APIs are available in the extension environment
@@ -40,7 +44,7 @@ export const CountdownTimer: React.FC = () => {
     return () => {
       chrome.storage.onChanged.removeListener(listener);
     };
-  }, []);
+  }, [initialDuration]);
 
   const start = () => {
     chrome.runtime.sendMessage({ type: "start" }, syncState);

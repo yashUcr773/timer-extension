@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TimeMate Options</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #f9fafb; color: #222; }
+    h1 { font-size: 1.5rem; margin-bottom: 1rem; }
+    label { display: block; margin: 1rem 0 0.5rem; }
+    input, select { padding: 0.3rem 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>TimeMate Options</h1>
+  <form id="options-form">
+    <label for="theme">Theme</label>
+    <select id="theme">
+      <option value="system">System Default</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+    <br />
+    <label for="notif">Enable Notifications</label>
+    <input type="checkbox" id="notif" />
+    <br />
+    <button type="submit">Save</button>
+  </form>
+  <div id="status" style="margin-top:1rem;color:green;"></div>
+  <script>
+    // Load options
+    document.addEventListener('DOMContentLoaded', () => {
+      chrome.storage.sync.get(['theme', 'notif'], (result) => {
+        document.getElementById('theme').value = result.theme || 'system';
+        document.getElementById('notif').checked = !!result.notif;
+      });
+    });
+    // Save options
+    document.getElementById('options-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      chrome.storage.sync.set({
+        theme: document.getElementById('theme').value,
+        notif: document.getElementById('notif').checked
+      }, () => {
+        document.getElementById('status').textContent = 'Options saved!';
+        setTimeout(() => document.getElementById('status').textContent = '', 1500);
+      });
+    });
+  </script>
+</body>
+</html>

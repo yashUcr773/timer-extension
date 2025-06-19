@@ -18,6 +18,28 @@ function hmsToSeconds(hms) {
   return (h || 0) * 3600 + (m || 0) * 60 + (s || 0);
 }
 
+function notify(title, message) {
+  chrome.notifications.create({
+    type: 'basic',
+    iconUrl: 'vite.svg',
+    title,
+    message,
+    priority: 2
+  });
+  if (navigator?.vibrate) navigator.vibrate([200, 100, 200]);
+}
+
+function updateBadge() {
+  if (timerState.running && timerState.remaining > 0) {
+    const min = Math.floor(timerState.remaining / 60);
+    const sec = timerState.remaining % 60;
+    chrome.action.setBadgeText({ text: `${min}:${sec.toString().padStart(2, '0')}` });
+    chrome.action.setBadgeBackgroundColor({ color: timerState.remaining <= 10 ? '#f87171' : '#60a5fa' });
+  } else {
+    chrome.action.setBadgeText({ text: '' });
+  }
+}
+
 function startTimer() {
   if (timerState.running || timerState.remaining <= 0) return;
   timerState.running = true;
@@ -25,27 +47,32 @@ function startTimer() {
   timerInterval = setInterval(() => {
     timerState.remaining--;
     timerState.lastUpdate = Date.now();
+    updateBadge();
     if (timerState.remaining <= 0) {
       clearInterval(timerInterval);
       timerState.running = false;
       timerState.remaining = 0;
-      // Optionally: chrome.notifications.create({ ... })
+      updateBadge();
+      notify('Timer Finished', 'Your countdown timer has ended!');
     }
     chrome.storage.local.set({ timemate_countdown: { ...timerState } });
   }, 1000);
   chrome.storage.local.set({ timemate_countdown: { ...timerState } });
+  updateBadge();
 }
 
 function pauseTimer() {
   timerState.running = false;
   if (timerInterval) clearInterval(timerInterval);
   chrome.storage.local.set({ timemate_countdown: { ...timerState } });
+  updateBadge();
 }
 
 function resetTimer() {
   pauseTimer();
   timerState.remaining = hmsToSeconds(timerState.input);
   chrome.storage.local.set({ timemate_countdown: { ...timerState } });
+  updateBadge();
 }
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {

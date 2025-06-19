@@ -37,6 +37,17 @@ export const Stopwatch: React.FC = () => {
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(centiseconds).padStart(2, "0")}`;
   };
 
+  // Always-on-top window
+  const openAlwaysOnTop = () => {
+    chrome.windows.create({
+      url: chrome.runtime.getURL("popup.html"),
+      type: "popup",
+      width: 360,
+      height: 500,
+      focused: true,
+    });
+  };
+
   return (
     <div className="flex flex-col items-center gap-4 p-4 bg-card rounded-lg shadow">
       <h2 className="text-xl font-bold">Stopwatch</h2>
@@ -57,6 +68,9 @@ export const Stopwatch: React.FC = () => {
           </ul>
         </div>
       )}
+      <button className="btn btn-accent mt-2" onClick={openAlwaysOnTop} aria-label="Open Always-on-Top Stopwatch">
+        Open Always-on-Top Stopwatch
+      </button>
     </div>
   );
 };

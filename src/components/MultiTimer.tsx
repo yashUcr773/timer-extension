@@ -3,8 +3,7 @@ import { CountdownTimer } from "./CountdownTimer";
 import { Stopwatch } from "./Stopwatch";
 import { Pomodoro } from "./Pomodoro";
 
-const timerTypes = ["timer", "stopwatch", "pomodoro"] as const;
-type TimerType = typeof timerTypes[number];
+type TimerType = "timer" | "stopwatch" | "pomodoro";
 
 interface TimerTab {
   id: string;
@@ -12,6 +11,12 @@ interface TimerTab {
   name: string;
   initialDuration?: string | null;
 }
+
+const TAB_COLORS: Record<TimerType, string> = {
+  timer: "#6366f1",
+  stopwatch: "#22d3ee",
+  pomodoro: "#f59e42",
+};
 
 export const MultiTimer: React.FC = () => {
   const [tabs, setTabs] = useState<TimerTab[]>([
@@ -33,18 +38,26 @@ export const MultiTimer: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="flex gap-1 mb-2">
+    <div className="w-full max-w-md mx-auto animate-fade-in">
+      <div className="flex gap-1 mb-2 overflow-x-auto">
         {tabs.map(tab => (
-          <div key={tab.id} className={`flex items-center px-2 py-1 rounded cursor-pointer ${active === tab.id ? 'bg-primary text-white' : 'bg-muted'}`}
-            onClick={() => setActive(tab.id)}>
+          <div
+            key={tab.id}
+            className={`flex items-center px-2 py-1 rounded cursor-pointer transition-all duration-200 ${active === tab.id ? 'shadow-lg scale-105' : ''}`}
+            style={{ background: active === tab.id ? TAB_COLORS[tab.type] : '#f3f4f6', color: active === tab.id ? '#fff' : '#222' }}
+            onClick={() => setActive(tab.id)}
+            title={`Switch to ${tab.name}`}
+            tabIndex={0}
+            aria-label={`Tab: ${tab.name}`}
+          >
             <input
               className="bg-transparent border-none w-20 font-bold text-center outline-none"
               value={tab.name}
               onChange={e => renameTab(tab.id, e.target.value)}
+              aria-label={`Rename ${tab.name}`}
             />
             {tabs.length > 1 && (
-              <button className="ml-1 text-xs" onClick={e => { e.stopPropagation(); closeTab(tab.id); }}>✕</button>
+              <button className="ml-1 text-xs" onClick={e => { e.stopPropagation(); closeTab(tab.id); }} aria-label={`Close ${tab.name}`} title={`Close ${tab.name}`}>×</button>
             )}
           </div>
         ))}
@@ -56,7 +69,7 @@ export const MultiTimer: React.FC = () => {
       </div>
       <div className="mt-2">
         {tabs.map(tab => (
-          <div key={tab.id} style={{ display: tab.id === active ? 'block' : 'none' }}>
+          <div key={tab.id} style={{ display: tab.id === active ? 'block' : 'none' }} className="animate-fade-in">
             {tab.type === 'timer' && <CountdownTimer initialDuration={tab.initialDuration} />}
             {tab.type === 'stopwatch' && <Stopwatch />}
             {tab.type === 'pomodoro' && <Pomodoro />}

@@ -55,39 +55,76 @@ export const Presets: React.FC<{ onSelect: (preset: Preset) => void }> = ({ onSe
   };
 
   return (
-    <div className="flex flex-col gap-4 p-4 bg-card rounded-lg shadow w-full max-w-xs">
+    <div className="flex flex-col gap-4 p-4 bg-card rounded-lg shadow w-full max-w-xs animate-fade-in">
       <h2 className="text-xl font-bold">Presets</h2>
-      <div className="flex gap-2 mb-2">
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          className="input input-bordered w-24"
-        />
-        <input
-          type="text"
-          placeholder="HH:MM:SS"
-          value={duration}
-          onChange={e => setDuration(e.target.value)}
-          className="input input-bordered w-24 font-mono"
-        />
-        <select value={color} onChange={e => setColor(e.target.value)} className="input input-bordered w-16">
-          {presetColors.map(c => <option key={c} value={c} style={{ background: c }}>{c}</option>)}
-        </select>
-        <button className="btn btn-primary" onClick={savePreset}>Save</button>
-      </div>
+      <form className="flex flex-col gap-2 mb-2" onSubmit={e => { e.preventDefault(); savePreset(); }}>
+        <label className="flex flex-col text-sm">
+          Name
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            className="input input-bordered"
+            maxLength={20}
+            required
+            aria-label="Preset name"
+          />
+        </label>
+        <label className="flex flex-col text-sm">
+          Duration (HH:MM:SS)
+          <input
+            type="text"
+            value={duration}
+            onChange={e => setDuration(e.target.value)}
+            pattern="\\d{2}:\\d{2}:\\d{2}"
+            className="input input-bordered font-mono"
+            required
+            aria-label="Preset duration"
+          />
+        </label>
+        <label className="flex flex-col text-sm">
+          Color
+          <div className="flex gap-1 mt-1">
+            {presetColors.map(c => (
+              <button
+                key={c}
+                type="button"
+                className={`w-6 h-6 rounded-full border-2 ${color === c ? 'border-black dark:border-white scale-110' : 'border-transparent'} transition-all`}
+                style={{ background: c }}
+                onClick={() => setColor(c)}
+                aria-label={`Select color ${c}`}
+                title={`Select color ${c}`}
+              />
+            ))}
+          </div>
+        </label>
+        <button className="btn btn-primary mt-2" type="submit" aria-label="Save preset" title="Save preset">
+          💾 Save Preset
+        </button>
+      </form>
       <div className="flex flex-col gap-2">
+        {presets.length === 0 && <div className="text-xs text-zinc-400">No presets yet.</div>}
         {presets.map(preset => (
-          <div key={preset.id} className="flex items-center gap-2">
+          <div
+            key={preset.id}
+            className="flex items-center gap-2 p-2 rounded bg-muted animate-fade-in"
+            style={{ borderLeft: `6px solid ${preset.color}` }}
+          >
             <button
-              className="btn btn-sm flex-1"
-              style={{ background: preset.color, color: '#fff' }}
+              className="flex-1 text-left font-semibold"
+              style={{ color: preset.color }}
               onClick={() => onSelect(preset)}
+              aria-label={`Use preset ${preset.name}`}
+              title={`Use preset ${preset.name}`}
             >
-              {preset.name} ({preset.duration})
+              {preset.name} <span className="ml-2 font-mono text-xs text-zinc-500">{preset.duration}</span>
             </button>
-            <button className="btn btn-xs btn-outline" onClick={() => removePreset(preset.id)}>✕</button>
+            <button
+              className="btn btn-xs btn-ghost"
+              onClick={() => removePreset(preset.id)}
+              aria-label={`Delete preset ${preset.name}`}
+              title={`Delete preset ${preset.name}`}
+            >🗑️</button>
           </div>
         ))}
       </div>
